@@ -1,11 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let books = JSON.parse(localStorage.getItem('books')) || []
+    // Data buku disimpan dalam array books.
+    let books = []
 
-    function saveDataToLocalStorage() {
-        localStorage.setItem('books', JSON.stringify(books))
-    }
-
-    //Fungsi Menampilkan Buku
+    // Fungsi untuk merender ulang rak buku.
     function renderBooks() {
         const incompleteBookshelfList = document.getElementById(
             'incompleteBookshelfList'
@@ -13,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const completeBookshelfList = document.getElementById(
             'completeBookshelfList'
         )
-
         incompleteBookshelfList.innerHTML = ''
         completeBookshelfList.innerHTML = ''
 
@@ -37,19 +33,15 @@ document.addEventListener('DOMContentLoaded', function () {
             removeButton.innerText = 'Hapus buku'
             removeButton.classList.add('red')
             removeButton.addEventListener('click', function () {
-                const bookIndex = books.findIndex(item => item.id === book.id)
-                if (bookIndex !== -1) {
-                    books.splice(bookIndex, 1)
-                    saveDataToLocalStorage()
-                    renderBooks()
-                }
+                // Tampilkan modal konfirmasi penghapusan.
+                openDeleteBookModal(book.id)
             })
 
             bookAction.appendChild(removeButton)
 
             if (book.isComplete) {
                 const undoButton = document.createElement('button')
-                undoButton.innerText = 'Belum selesai di Baca'
+                undoButton.innerHTML = '<strong>Belum selesai di Baca</strong>'
                 undoButton.classList.add('green')
                 undoButton.addEventListener('click', function () {
                     book.isComplete = false
@@ -61,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 completeBookshelfList.appendChild(bookItem)
             } else {
                 const completeButton = document.createElement('button')
-                completeButton.innerText = 'Selesai dibaca'
+                completeButton.innerHTML = '<strong>Selesai dibaca</strong>'
                 completeButton.classList.add('green')
                 completeButton.addEventListener('click', function () {
                     book.isComplete = true
@@ -80,24 +72,44 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Fungsi Merubah Text Button Simpan Buku
-    const inputBookIsComplete = document.getElementById('inputBookIsComplete')
-    const bookSubmitButton = document.getElementById('bookSubmit')
-    inputBookIsComplete.addEventListener('change', function () {
-        if (inputBookIsComplete.checked) {
-            bookSubmitButton.innerHTML = 'Masukkan Buku ke rak <strong>Selesai dibaca</strong>'
-        } else {
-            bookSubmitButton.innerHTML =
-                'Masukkan Buku ke rak <strong>Belum selesai dibaca</strong>'
-        }
-    })
+    // Fungsi untuk membuka modal konfirmasi penghapusan.
+    function openDeleteBookModal(id) {
+        const modal = document.getElementById('deleteBookModal')
+        const confirmDeleteButton = document.getElementById('confirmDelete')
+        const cancelDeleteButton = document.getElementById('cancelDelete')
 
+        // Tambahkan event listener untuk tombol "Hapus" di modal.
+        confirmDeleteButton.addEventListener('click', function () {
+            // Cari buku yang sesuai dengan id.
+            const bookIndex = books.findIndex(item => item.id === id)
+
+            // Hapus buku dari array books.
+            if (bookIndex !== -1) {
+                books.splice(bookIndex, 1)
+                saveDataToLocalStorage()
+                renderBooks()
+            }
+
+            // Tutup modal setelah penghapusan.
+            modal.style.display = 'none'
+        })
+
+        // Tambahkan event listener untuk tombol "Batal" di modal.
+        cancelDeleteButton.addEventListener('click', function () {
+            // Tutup modal tanpa melakukan penghapusan.
+            modal.style.display = 'none'
+        })
+
+        // Tampilkan modal.
+        modal.style.display = 'block'
+    }
+
+    // Event listener untuk formulir input buku.
     const inputForm = document.getElementById('inputBook')
-
-    //Fungsi Menyimpan Buku
     inputForm.addEventListener('submit', function (event) {
         event.preventDefault()
 
+        // Ambil nilai input pengguna.
         const inputBookTitle = document.getElementById('inputBookTitle').value
         const inputBookAuthor = document.getElementById('inputBookAuthor').value
         const inputBookYear = document.getElementById('inputBookYear').value
@@ -115,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return
         }
 
+        // Buat objek buku baru.
         const newBook = {
             id: +new Date(),
             title: inputBookTitle,
@@ -123,16 +136,20 @@ document.addEventListener('DOMContentLoaded', function () {
             isComplete: inputBookIsComplete
         }
 
+        // Tambahkan buku ke array books.
         books.push(newBook)
 
+        // Simpan data buku ke dalam localStorage.
         saveDataToLocalStorage()
 
+        // Bersihkan input form.
         inputForm.reset()
 
+        // Tampilkan ulang rak buku.
         renderBooks()
     })
 
-    // Event listener untuk form pencarian.
+    // Event listener untuk formulir pencarian.
     const searchForm = document.getElementById('searchBook')
     searchForm.addEventListener('submit', function (event) {
         event.preventDefault()
@@ -141,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         searchBooks(searchTerm)
     })
 
-    // Fungsi pencarian buku .
+    // Fungsi untuk melakukan pencarian buku berdasarkan judul.
     function searchBooks(searchTerm) {
         const matchingBooks = []
 
@@ -185,19 +202,14 @@ document.addEventListener('DOMContentLoaded', function () {
             removeButton.innerText = 'Hapus buku'
             removeButton.classList.add('red')
             removeButton.addEventListener('click', function () {
-                const bookIndex = books.findIndex(item => item.id === book.id)
-                if (bookIndex !== -1) {
-                    books.splice(bookIndex, 1)
-                    saveDataToLocalStorage()
-                    renderBooks()
-                }
+                openDeleteBookModal(book.id)
             })
 
             bookAction.appendChild(removeButton)
 
             if (book.isComplete) {
                 const undoButton = document.createElement('button')
-                undoButton.innerText = 'Belum selesai di Baca'
+                undoButton.innerHTML = '<strong>Belum selesai di Baca</strong>'
                 undoButton.classList.add('green')
                 undoButton.addEventListener('click', function () {
                     book.isComplete = false
@@ -209,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 completeBookshelfList.appendChild(bookItem)
             } else {
                 const completeButton = document.createElement('button')
-                completeButton.innerText = 'Selesai dibaca'
+                completeButton.innerHTML = '<strong>Selesai dibaca</strong>'
                 completeButton.classList.add('green')
                 completeButton.addEventListener('click', function () {
                     book.isComplete = true
@@ -228,5 +240,31 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Fungsi untuk menyimpan data buku ke dalam localStorage.
+    function saveDataToLocalStorage() {
+        localStorage.setItem('books', JSON.stringify(books))
+    }
+
+    // Fungsi untuk mengambil data buku dari localStorage.
+    function loadDataFromLocalStorage() {
+        const storedBooks = localStorage.getItem('books')
+        if (storedBooks) {
+            books = JSON.parse(storedBooks)
+            renderBooks()
+        }
+    }
+
+    // Panggil fungsi untuk mengambil data buku dari localStorage saat halaman dimuat.
+    loadDataFromLocalStorage()
+
+    // Tambahkan event listener untuk menutup modal saat pengguna mengklik di luar modal.
+    window.addEventListener('click', function (event) {
+        const modal = document.getElementById('deleteBookModal')
+        if (event.target === modal) {
+            modal.style.display = 'none'
+        }
+    })
+
+    // Tampilkan buku-buku yang sudah ada saat halaman dimuat.
     renderBooks()
 })
