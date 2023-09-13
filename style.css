@@ -242,3 +242,33 @@ p {
     color: #fff;
 }
 
+.modal-content > input {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    margin-top: 10px;
+    border: none;
+}
+
+.modal-content > input:focus {
+    outline: none;
+}
+
+.modal-content > p{
+    text-align: left;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.check-flex{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0px;
+}
+
+.modal-buttons button#saveEdit {
+    background-color: green;
+    color: #fff;
+}

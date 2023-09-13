@@ -65,6 +65,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 incompleteBookshelfList.appendChild(bookItem)
             }
 
+            const editButton = document.createElement('button')
+            editButton.innerText = 'Edit buku'
+            editButton.classList.add('blue')
+            editButton.addEventListener('click', function () {
+                openEditBookModal(book.id)
+            })
+
+            bookAction.appendChild(editButton)
+
             bookItem.appendChild(bookTitle)
             bookItem.appendChild(bookAuthor)
             bookItem.appendChild(bookYear)
@@ -233,6 +242,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 incompleteBookshelfList.appendChild(bookItem)
             }
 
+            const editButton = document.createElement('button')
+            editButton.innerText = 'Edit buku'
+            editButton.classList.add('blue')
+            editButton.addEventListener('click', function () {
+                openEditBookModal(book.id)
+            })
+
+            bookAction.appendChild(editButton)
+
             bookItem.appendChild(bookTitle)
             bookItem.appendChild(bookAuthor)
             bookItem.appendChild(bookYear)
@@ -264,6 +282,54 @@ document.addEventListener('DOMContentLoaded', function () {
             modal.style.display = 'none'
         }
     })
+
+    function openEditBookModal(id) {
+        const modal = document.getElementById('editBookModal')
+        const saveEditButton = document.getElementById('saveEdit')
+        const cancelEditButton = document.getElementById('cancelEdit')
+
+        // Temukan buku yang sesuai dengan id.
+        const bookIndex = books.findIndex(item => item.id === id)
+        const book = books[bookIndex]
+
+        // Isi formulir pengeditan dengan informasi buku saat ini.
+        const editBookTitle = document.getElementById('editBookTitle')
+        const editBookAuthor = document.getElementById('editBookAuthor')
+        const editBookYear = document.getElementById('editBookYear')
+        const editBookIsComplete = document.getElementById('editBookIsComplete')
+
+        editBookTitle.value = book.title
+        editBookAuthor.value = book.author
+        editBookYear.value = book.year
+        editBookIsComplete.checked = book.isComplete
+
+        // Tambahkan event listener untuk tombol "Simpan" di modal pengeditan.
+        saveEditButton.addEventListener('click', function () {
+            // Simpan perubahan ke dalam objek buku.
+            book.title = editBookTitle.value
+            book.author = editBookAuthor.value
+            book.year = editBookYear.value
+            book.isComplete = editBookIsComplete.checked
+
+            // Simpan perubahan ke dalam localStorage.
+            saveDataToLocalStorage()
+
+            // Tutup modal pengeditan.
+            modal.style.display = 'none'
+
+            // Tampilkan ulang rak buku.
+            renderBooks()
+        })
+
+        // Tambahkan event listener untuk tombol "Batal" di modal pengeditan.
+        cancelEditButton.addEventListener('click', function () {
+            // Tutup modal tanpa melakukan perubahan.
+            modal.style.display = 'none'
+        })
+
+        // Tampilkan modal pengeditan.
+        modal.style.display = 'block'
+    }
 
     // Tampilkan buku-buku yang sudah ada saat halaman dimuat.
     renderBooks()
